@@ -27,7 +27,7 @@ export class EChartsLayoutBuilder {
   heightForLegend = 50;
   heightForTitle = 50;
 
-  priorityOrderOfInclusion = ["xAxis", "legend", "title", "scrollBar"];
+  priorityOrderOfInclusion = ["legend", "title", "xAxis", "scrollBar"];
 
   positionLayoutForElement: Record<string, "top" | "bottom"> = {
     xAxis: "bottom",
@@ -64,18 +64,35 @@ export class EChartsLayoutBuilder {
     this.layoutConfig = this.layoutConfigForElements();
   }
 
-  heightForElement = (elementName: string): number => {
+  heightForElement = (elementName: string): any => {
     switch (elementName) {
       case "xAxis":
-        return this.xAxisLayoutBuilder.heightForXAxis();
+        return {
+          min: 60,
+          max: 100
+        }
       case "legend":
-        return this.heightForLegend;
+        return {
+          min: this.heightForLegend,
+          max: this.heightForLegend
+        }
       case "title":
+        return {
+          min: this.heightForTitle,
+          max: this.heightForTitle
+        }
         return this.heightForTitle;
       case "scrollBar":
-        return this.layoutHeightForScrollBar();
+        return {
+          min: this.layoutHeightForScrollBar(),
+          max: this.layoutHeightForScrollBar()
+        }
+        return 
       default:
-        return 0;
+        return {
+          min: 0,
+          max: 0
+        };
     }
   };
 
@@ -108,6 +125,24 @@ export class EChartsLayoutBuilder {
 
     return config;
   };
+
+  layoutConfigForXAxis = () => {
+    const { bottom, top } = this.elementVisibilityLayoutBuilder.visibleElements;
+    const visibilityConfig = [...top, ...bottom];
+    const configs = visibilityConfig.filter((config) => {
+      config.elementName == "xAxis"
+    })
+    let xAxisConfig;
+
+    if (configs.length > 0) {
+      xAxisConfig = configs[0]
+    }
+
+    return {
+      
+    }
+
+  }
 
   layoutConfigForElements = () => {
     const { bottom, top } = this.elementVisibilityLayoutBuilder.visibleElements;

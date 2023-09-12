@@ -205,7 +205,7 @@ class ChartComponent extends React.Component<
     try {
       if (!equal(this.echartConfiguration, eChartOptions)) {
         this.echartConfiguration = eChartOptions;
-        console.log("***", "setting chart configuration ", JSON.stringify(this.echartConfiguration, null, 2))
+        // console.log("***", "setting chart configuration ", JSON.stringify(this.echartConfiguration, null, 2))
         this.echartsInstance.setOption(this.echartConfiguration, true);
 
         if (this.state.eChartsError) {

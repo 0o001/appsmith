@@ -14,31 +14,38 @@ export class EChartsXAxisLayoutBuilder {
     this.chartType = chartType;
   }
 
-  configForXAxis() {
+  configForXAxis(width: number) {
     return {
-      nameGap: this.heightForXAxisLabels(),
+      nameGap: this.heightForXAxisLabels(width),
       axisLabel: {
-        width: this.widthForXAxisLabels(),
+        width: width,
       },
     };
   }
 
-  heightForXAxis = () => {
-    if (this.chartType == "PIE_CHART") {
-      return 0;
-    }
-    return this.heightForXAxisLabels() + this.defaultHeightForXAxisName;
-  };
+  // heightForXAxis = () => {
+  //   if (this.chartType == "PIE_CHART") {
+  //     return 0;
+  //   }
+  //   return 0;
+  //   // return this.heightForXAxisLabels() + this.defaultHeightForXAxisName;
+  // };
 
-  heightForXAxisLabels = () => {
+  heightForXAxisLabels = (width: number) => {
     let labelsHeight: number = this.defaultHeightForXAxisLabels;
     if (this.labelOrientation != LabelOrientation.AUTO) {
-      labelsHeight = this.widthForXAxisLabels();
+      labelsHeight = width;
     }
     return labelsHeight + this.gapBetweenLabelAndName;
   };
 
-  widthForXAxisLabels = () => {
+  widthForXAxis;
+
+  minAndMaxXAxisLabels = () => {
+    return {
+      min: 60,
+      max: 100,
+    };
     switch (this.labelOrientation) {
       case LabelOrientation.SLANT: {
         return 50;

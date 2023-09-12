@@ -62,9 +62,13 @@ export class EChartElementVisibilityCalculator {
     };
 
     while (index < count && remainingHeight > 0) {
-      const config = this.props.layoutConfigs[index];
-      if (config.height <= remainingHeight) {
-        remainingHeight -= config.height;
+      const config = {...this.props.layoutConfigs[index]} ;
+      console.log("***", "config is ", config)
+      const allocatedHeight = this.allocatedHeightForConfig(config.height, remainingHeight)
+      console.log("***", "allocated height is ", allocatedHeight)
+      if (allocatedHeight > 0) {
+        remainingHeight -= allocatedHeight;
+        config.height = allocatedHeight
         index = index + 1;
         if (config.position == "top") {
           output.top.push(config);
@@ -74,7 +78,27 @@ export class EChartElementVisibilityCalculator {
       } else {
         break;
       }
+      // if (config.height <= remainingHeight) {
+        
+      // } else {
+      //   break;
+      // }
     }
+    console.log("***", "output config is ",)
     return output;
+  }
+
+  allocatedHeightForConfig(heightConfig : any, availableHeight: number) {
+    const difference = availableHeight - heightConfig.max
+    if (difference >= 0) {
+      return heightConfig.max
+    } else {
+      const allocatedHeight = heightConfig.max - (-1*difference)
+      if (allocatedHeight >= heightConfig.min) {
+        return allocatedHeight
+      } else {
+        return 0;
+      }
+    }
   }
 }

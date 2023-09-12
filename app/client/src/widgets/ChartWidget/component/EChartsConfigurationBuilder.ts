@@ -280,7 +280,7 @@ export class EChartsConfigurationBuilder {
       color: Colors.DOVE_GRAY2,
       rotate: this.#configForLabelOrientation(props),
       width: (layoutConfig.xAxis.axisLabel as Record<string, unknown>).width,
-      overflow: "break",
+      overflow: "truncate",
     };
 
     if (props.chartType == "BAR_CHART" && props.setAdaptiveYMin) {
