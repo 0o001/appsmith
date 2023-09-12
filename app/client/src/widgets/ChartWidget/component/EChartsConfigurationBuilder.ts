@@ -279,9 +279,10 @@ export class EChartsConfigurationBuilder {
       fontFamily: this.fontFamily,
       color: Colors.DOVE_GRAY2,
       rotate: this.#configForLabelOrientation(props),
-      width: (layoutConfig.xAxis.axisLabel as Record<string, unknown>).width,
-      overflow: "truncate",
+      ...(layoutConfig.xAxis.axisLabel as Record<string, unknown>),
+      // overflow: "truncate",
     };
+    console.log("***", "x axis config in main layout is ", config)
 
     if (props.chartType == "BAR_CHART" && props.setAdaptiveYMin) {
       config.min = "dataMin";

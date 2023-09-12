@@ -84,21 +84,29 @@ export class EChartElementVisibilityCalculator {
       //   break;
       // }
     }
-    console.log("***", "output config is ",)
+    console.log("***", "output config is ", output)
     return output;
   }
 
   allocatedHeightForConfig(heightConfig : any, availableHeight: number) {
-    const difference = availableHeight - heightConfig.max
-    if (difference >= 0) {
+    if (availableHeight > heightConfig.max) {
       return heightConfig.max
+    } else if (availableHeight < heightConfig.min) {
+      return 0
     } else {
-      const allocatedHeight = heightConfig.max - (-1*difference)
-      if (allocatedHeight >= heightConfig.min) {
-        return allocatedHeight
-      } else {
-        return 0;
-      }
+      return availableHeight
     }
+    // console.log("***", "available height is ", availableHeight)
+    // const difference = availableHeight - heightConfig.max
+    // if (difference >= 0) {
+    //   return heightConfig.max
+    // } else {
+    //   const allocatedHeight = heightConfig.max - (-1*difference)
+    //   if (allocatedHeight >= heightConfig.min) {
+    //     return allocatedHeight
+    //   } else {
+    //     return 0;
+    //   }
+    // }
   }
 }

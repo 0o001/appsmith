@@ -49,6 +49,7 @@ export class EChartsLayoutBuilder {
     this.xAxisLayoutBuilder = new EChartsXAxisLayoutBuilder(
       this.props.labelOrientation,
       this.props.chartType,
+      this.props.seriesConfig
     );
     this.yAxisLayoutBuilder = new EChartsYAxisLayoutBuilder(this.props.width);
 
@@ -62,15 +63,17 @@ export class EChartsLayoutBuilder {
     );
 
     this.layoutConfig = this.layoutConfigForElements();
+    this.xAxisLayoutBuilder.maxHeight(this.props.seriesConfig)
   }
 
   heightForElement = (elementName: string): any => {
     switch (elementName) {
       case "xAxis":
-        return {
-          min: 60,
-          max: 100
-        }
+        return this.xAxisLayoutBuilder.minAndMaxXAxisLabels()
+        // return {
+        //   min: 60,
+        //   max: 100
+        // }
       case "legend":
         return {
           min: this.heightForLegend,
@@ -114,8 +117,9 @@ export class EChartsLayoutBuilder {
 
     config.xAxis = {
       ...config.xAxis,
-      ...this.xAxisLayoutBuilder.configForXAxis(),
+      // ...this.xAxisLayoutBuilder.configForXAxis(),
     };
+    console.log("***", "default xaxis config is ", config.xAxis)
 
     config.scrollBar = {
       ...config.scrollBar,
@@ -129,19 +133,27 @@ export class EChartsLayoutBuilder {
   layoutConfigForXAxis = () => {
     const { bottom, top } = this.elementVisibilityLayoutBuilder.visibleElements;
     const visibilityConfig = [...top, ...bottom];
+    console.log("***", "visibility config is ", visibilityConfig)
     const configs = visibilityConfig.filter((config) => {
-      config.elementName == "xAxis"
+      return config.elementName == "xAxis"
     })
+    console.log("***", "visibility config is ", configs)
     let xAxisConfig;
 
+    
     if (configs.length > 0) {
       xAxisConfig = configs[0]
     }
 
-    return {
-      
-    }
+    console.log("***", "xaxis config is ", xAxisConfig)
+    const returnConfig = this.xAxisLayoutBuilder.configForXAxis(xAxisConfig?.height ?? 0)
+    console.log("***", "return config is ", returnConfig)
+    return returnConfig
 
+    // return {
+    //   ...xAxisConfig,
+    //   // this.xAxisLayoutBuilder.configForXAxis(xAxisConfig?.height)
+    // }
   }
 
   layoutConfigForElements = () => {
@@ -159,6 +171,11 @@ export class EChartsLayoutBuilder {
     output.grid.top = gridOffsets.top;
     output.grid.bottom = gridOffsets.bottom;
     output.legend.top = output.title.show ? 50 : 0;
+    output.xAxis = {
+      ...output.xAxis,
+      ...this.layoutConfigForXAxis()
+    }
+    console.log("***", "output config for xaxis is ", output.xAxis)
 
     return output;
   };
