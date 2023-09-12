@@ -1,4 +1,5 @@
 import type {
+  AllChartData,
   ChartType,
   LabelOrientation,
 } from "widgets/ChartWidget/constants";
@@ -13,6 +14,7 @@ type LayoutProps = {
   labelOrientation: LabelOrientation;
   chartType: ChartType;
   chartTitle: string;
+  seriesConfig: AllChartData;
 };
 
 export class EChartsLayoutBuilder {
@@ -149,6 +151,9 @@ export class EChartsLayoutBuilder {
       if (configName == "scrollBar") {
         return this.props.allowScroll;
       }
+      if (configName == "legend") {
+        return this.needsLegend(this.props.seriesConfig)
+      }
       if (configName == "xAxis") {
         return this.props.chartType != "PIE_CHART";
       }
@@ -157,5 +162,18 @@ export class EChartsLayoutBuilder {
       }
       return true;
     });
+  }
+
+  needsLegend(seriesConfig: AllChartData) {
+    const seriesKeys = Object.keys(seriesConfig) 
+    const numSeries = seriesKeys.length
+    if (numSeries == 0) {
+      return false
+    } else if (numSeries == 1) {
+      const seriesTitle = seriesConfig[seriesKeys[0]].seriesName ?? ""
+      return seriesTitle.length > 0
+    } else {
+      return true
+    }
   }
 }

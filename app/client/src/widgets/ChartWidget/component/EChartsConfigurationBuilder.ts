@@ -331,6 +331,7 @@ export class EChartsConfigurationBuilder {
       labelOrientation: props.labelOrientation ?? LabelOrientation.AUTO,
       chartType: props.chartType,
       chartTitle: props.chartName,
+      seriesConfig: props.chartData
     });
     const layoutConfig: Record<
       string,
