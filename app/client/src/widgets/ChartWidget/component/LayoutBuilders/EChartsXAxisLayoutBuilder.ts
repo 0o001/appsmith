@@ -33,7 +33,7 @@ export class EChartsXAxisLayoutBuilder {
       }
     } else {
       return {
-        width: width - this.defaultHeightForXAxisName,
+        width: width - this.defaultHeightForXAxisName - this.gapBetweenLabelAndName,
         overflow: "truncate"
       }
     }

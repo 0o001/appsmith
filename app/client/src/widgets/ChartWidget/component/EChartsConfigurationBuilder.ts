@@ -314,7 +314,7 @@ export class EChartsConfigurationBuilder {
             show: layoutConfig.scrollBar.show,
             type: "slider",
             filterMode: "filter",
-            start: "20",
+            start: "0",
             bottom: layoutConfig.scrollBar.bottom,
             height: layoutConfig.scrollBar.height,
           },

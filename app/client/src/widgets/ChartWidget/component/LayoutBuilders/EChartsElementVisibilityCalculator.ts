@@ -1,3 +1,5 @@
+import { element } from "prop-types";
+
 export type EChartElementLayoutParams = {
   elementName: string;
   height: number;
@@ -19,7 +21,8 @@ export class EChartElementVisibilityCalculator {
 
   constructor(props: EChartElementVisibilityProps) {
     this.props = props;
-    this.visibleElements = this.elementsToInclude();
+    this.visibleElements = this.heightsForElements();
+    console.log("***", "visible elements is ", this.visibleElements)
   }
 
   needsCustomTopPadding() {
@@ -51,12 +54,68 @@ export class EChartElementVisibilityCalculator {
     return this.props.height - this.props.minimumHeight;
   }
 
+  heightsForElements() {
+    let remainingHeight = this.availableHeight();
+    let index = 0;
+    const count = this.props.layoutConfigs.length;
+
+    const result : any = {}
+
+    while (index < count && remainingHeight > 0) {
+      const config = {...this.props.layoutConfigs[index]} ;
+      console.log("***", "config is ", config, " remaining height is ", remainingHeight)
+      // const allocatedHeight = this.allocatedHeightForConfig(config.height, remainingHeight)
+      const heightConfig : any = config.height
+      // console.log("***", "allocated height is ", allocatedHeight)
+      if ((heightConfig).min <= remainingHeight) {
+        remainingHeight -= heightConfig.min;
+        result[config.elementName] = {
+          height: heightConfig.min,
+          min: heightConfig.min,
+          max: heightConfig.max,
+          position: config.position,
+          elementName: config.elementName
+        }
+        index = index + 1;
+      } else {
+        break;
+      }
+    }
+
+    for (const key in result) {
+      if (remainingHeight > 0) {
+        const heightConfig = result[key] as any
+        const allocatedHeight = this.allocateRemainingHeight(remainingHeight, heightConfig)
+        console.log("***", "allocating remaining space ", allocatedHeight, " to ", result[key].elementName)
+        remainingHeight -= allocatedHeight
+        heightConfig.height += allocatedHeight
+      } else {
+        break;
+      }
+    }
+    
+    const output : any = {
+      top: [],
+      bottom: []
+    }
+
+    for (const key in result) {
+      const elementConfig = result[key]
+      if (result[key].position == "top") {
+        output.top.push(elementConfig)
+      } else {
+        output.bottom.push(elementConfig)
+      }
+    }
+    return output
+  }
+
   elementsToInclude() {
     let remainingHeight = this.availableHeight();
     let index = 0;
     const count = this.props.layoutConfigs.length;
 
-    const output = {
+    const output : any = {
       top: [] as EChartElementLayoutParams[],
       bottom: [] as EChartElementLayoutParams[],
     };
@@ -64,11 +123,12 @@ export class EChartElementVisibilityCalculator {
     while (index < count && remainingHeight > 0) {
       const config = {...this.props.layoutConfigs[index]} ;
       console.log("***", "config is ", config)
-      const allocatedHeight = this.allocatedHeightForConfig(config.height, remainingHeight)
-      console.log("***", "allocated height is ", allocatedHeight)
-      if (allocatedHeight > 0) {
-        remainingHeight -= allocatedHeight;
-        config.height = allocatedHeight
+      // const allocatedHeight = this.allocatedHeightForConfig(config.height, remainingHeight)
+      const heightConfig : any = config.height
+      // console.log("***", "allocated height is ", allocatedHeight)
+      if ((heightConfig).min <= remainingHeight) {
+        remainingHeight -= heightConfig;
+        config.height = heightConfig.min
         index = index + 1;
         if (config.position == "top") {
           output.top.push(config);
@@ -84,8 +144,19 @@ export class EChartElementVisibilityCalculator {
       //   break;
       // }
     }
+    output.remainingHeight = remainingHeight
     console.log("***", "output config is ", output)
     return output;
+  }
+
+  allocateRemainingHeight(remainingHeight: number, heightConfig: any) {
+    console.log("***", "calling allocate height with remaining height ", remainingHeight, " height config ", heightConfig)
+    let difference = heightConfig.max - heightConfig.min
+    if (remainingHeight > difference) {
+      return difference
+    } else {
+      return remainingHeight
+    }
   }
 
   allocatedHeightForConfig(heightConfig : any, availableHeight: number) {
