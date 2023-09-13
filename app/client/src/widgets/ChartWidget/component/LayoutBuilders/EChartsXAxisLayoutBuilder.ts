@@ -2,6 +2,7 @@ import { Label } from "@blueprintjs/core";
 import { max } from "lodash";
 import { LabelOrientation } from "widgets/ChartWidget/constants";
 import type { AllChartData, ChartType } from "widgets/ChartWidget/constants";
+import { allLabelsForAxis, maxWidthForLabels } from "../helpers";
 
 export class EChartsXAxisLayoutBuilder {
   labelOrientation: LabelOrientation;
@@ -59,51 +60,44 @@ export class EChartsXAxisLayoutBuilder {
     } else {
       labelsHeight = this.widthForXAxisLabels();
     }
+    console.log("***", "pixel height for labels is ", labelsHeight)
     const result = labelsHeight + this.gapBetweenLabelAndName
     console.log("***", "height for xaxis labels is ", result)
     return result
   };
 
-  maxHeight = (seriesConfigs : AllChartData) => {
-    const keys = Object.keys(seriesConfigs)
-    let maxLength : number = 0
-    let maxString = ""
+  // maxHeight = (chartType: ChartType, seriesConfigs : AllChartData) => {
+  //   const keys = Object.keys(seriesConfigs)
+  //   let maxLength : number = 0
+  //   let maxString = ""
 
-    let labels : string[] = []
-    for (const key of keys) {
-      const seriesData : string[] = seriesConfigs[key].data.map((datapoint) => {
-        return datapoint.x
-      })
+    
+  //   for (const key of keys) {
+  //     const seriesData : string[] = seriesConfigs[key].data.map((datapoint) => {
+  //       if (chartType == "BAR_CHART") {
+  //         return datapoint.y
+  //       } else {
+  //         return datapoint.x
+  //       }
+  //     })
 
-      labels = [...labels, ...seriesData]
-    }
-    // console.log("***", "all labels are ", labels)
-    for (const label of labels) {
-      // console.log("***", "iterating over label ", label)
-      if (label.length > maxLength) {
-        maxLength = label.length
-        maxString = label
-      }
-    }
-    const widthInPixels = this.getTextWidth(maxString)
-    console.log("***", "max length is ", maxLength, maxString)
-    console.log("***", "width in pixels is ", widthInPixels)
-    return widthInPixels
-  }
+  //     labels = [...labels, ...seriesData]
+  //   }
+  //   // console.log("***", "all labels are ", labels)
+  //   for (const label of labels) {
+  //     // console.log("***", "iterating over label ", label)
+  //     if (label.length > maxLength) {
+  //       maxLength = label.length
+  //       maxString = label
+  //     }
+  //   }
+  //   const widthInPixels = this.getTextWidth(maxString)
+  //   console.log("***", "max length is ", maxLength, maxString)
+  //   console.log("***", "width in pixels is ", widthInPixels)
+  //   return widthInPixels
+  // }
 
-  getTextWidth = (text: string) => {
-    // re-use canvas object for better performance
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
-    if (context) {
-      const font = "12px Nunito Sans"
-      context.font = font;
-      const metrics = context.measureText(text);
-      return metrics.width;
-    } else {
-      return 0;
-    }
-  }
+  
 
   widthForXAxisLabels = () => {
     switch (this.labelOrientation) {
@@ -111,14 +105,18 @@ export class EChartsXAxisLayoutBuilder {
         return 0;
       }
       default: {
-        return this.maxHeight(this.seriesConfig);
+        const labels = allLabelsForAxis("xAxis", this.chartType, this.seriesConfig)
+        return maxWidthForLabels(labels)
       }
     }
   }
 
   minAndMaxXAxisLabels = () => {
+    const minHeight = this.minHeightForLabels();
+    const maxHeight = this.heightForXAxis()
+
     const result = {
-      min: this.minHeightForLabels(),
+      min: minHeight > maxHeight ? maxHeight : minHeight,
       max: this.heightForXAxis()
     }
     console.log("***", "min and max requested is ", JSON.stringify(result))

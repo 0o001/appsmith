@@ -51,7 +51,7 @@ export class EChartsLayoutBuilder {
       this.props.chartType,
       this.props.seriesConfig
     );
-    this.yAxisLayoutBuilder = new EChartsYAxisLayoutBuilder(this.props.width);
+    this.yAxisLayoutBuilder = new EChartsYAxisLayoutBuilder(this.props.width, this.props.chartType, this.props.seriesConfig);
 
     this.elementVisibilityLayoutBuilder = new EChartElementVisibilityCalculator(
       {
@@ -63,7 +63,6 @@ export class EChartsLayoutBuilder {
     );
 
     this.layoutConfig = this.layoutConfigForElements();
-    this.xAxisLayoutBuilder.maxHeight(this.props.seriesConfig)
   }
 
   heightForElement = (elementName: string): any => {

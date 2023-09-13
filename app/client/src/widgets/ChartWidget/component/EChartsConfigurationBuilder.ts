@@ -180,6 +180,10 @@ export class EChartsConfigurationBuilder {
   }
 
   #configForLabelOrientation(props: ChartComponentProps) {
+    if (props.chartType == "BAR_CHART") {
+      return 0
+    }
+    
     switch (props.labelOrientation) {
       case LabelOrientation.SLANT:
         return 45;

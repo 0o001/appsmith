@@ -1,5 +1,5 @@
 import { get } from "lodash";
-import type { ChartType, ChartSelectedDataPoint } from "../constants";
+import type { ChartType, ChartSelectedDataPoint, AllChartData } from "../constants";
 import { omit, cloneDeep } from "lodash";
 
 export const parseOnDataPointClickParams = (evt: any, chartType: ChartType) => {
@@ -60,3 +60,65 @@ export const parseOnDataPointClickForBasicCharts = (
     seriesTitle: seriesName,
   } as ChartSelectedDataPoint;
 };
+
+export const allLabelsForAxis = (axisName: "xAxis" | "yAxis", chartType: ChartType, seriesConfigs: AllChartData) => {
+  let labelKey : "x" | "y";
+  if (axisName == "xAxis") {
+    labelKey = chartType == "BAR_CHART" ? "y" : "x"
+  } else {
+    labelKey = chartType == "BAR_CHART" ? "x" : "y"
+  }
+  const seriesIDs = Object.keys(seriesConfigs)
+
+  let labels : string[] = []
+
+  for (const seriesID of seriesIDs) {
+    const datapoints = seriesConfigs[seriesID].data
+    console.log("***", "chart type is ", chartType)
+    console.log("***", "label key is ", labelKey)
+    console.log("***", "data points is ", datapoints)
+    const seriesLabels = datapoints.map((datapoint) => {
+      return datapoint[labelKey].toString()
+      // if (chartType == "BAR_CHART") {
+      //   return datapoint[labelKey].toString()
+      // } else {
+      //   return 
+      // }
+    })
+
+    labels = [...labels, ...seriesLabels]
+  }
+  console.log("***", "all labels are ", labels)
+  return labels
+}
+
+export const maxWidthForLabels = (labels: string[]) => {
+  let maxLength : number = 0
+  let maxString = ""
+
+  for (const label of labels) {
+    // console.log("***", "iterating over label ", label)
+    if (label.length > maxLength) {
+      maxLength = label.length
+      maxString = label
+    } else {
+      console.log("***", "coming in else ", label.length)
+    }
+  }
+  return getTextWidth(maxString)
+}
+
+export const getTextWidth = (text: string) => {
+  // re-use canvas object for better performance
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  if (context) {
+    const font = "12px Nunito Sans"
+    context.font = font;
+    console.log("***", "measuring text ", text)
+    const metrics = context.measureText(text);
+    return metrics.width;
+  } else {
+    return 0;
+  }
+}
